@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="SE_Projekt" default="init" basedir=".">
+<project name="SE_Projekt" default="clean" basedir=".">
 
 	<description>
 		Beispiel fuer ein Ant-Skript
@@ -8,11 +8,53 @@
 	
 	
 	 <target name="init">
-           <echo message= "Hallo"/>
-         </target>
+     <!-- Einen Timestamp setzen -->
+       <tstamp>
+	        <format property="timestamp" pattern="yyyy-MM-dd_HH-mm-ss"/>
+	    </tstamp>
+     </target>
 
   
 	
+	<!-- Erstellen der Ordner-Struktur -->
+	<target name="prepare" depends="init" description="Ordner-Struktur erstellen">
+		<mkdir dir="input" />
+		<mkdir dir="output" />
+	</target>
 	
+	
+	<target name="unzip" depends="prepare" description="Entzipt client.zip und legt die Dateien im neuen Ordner ab">
+	
+	    <unzip src ="C:/Users/elena/Desktop/Studium/1.Semester/Softwareentwicklung/buildmanagment/sourse/HelloWorld.zip" dest="C:/Users/elena/Desktop/Studium/1.Semester/Softwareentwicklung/buildmanagment/input"/>
+	
+	
+	</target>
+	
+	<!-- Sourcen kompilieren mit Hilfe des Java Compilers -->
+	<target name="compile" depends="prepare,unzip" description="Kompiliert die Java-Sourcen"> 
+	     <echo message="compile" />
+	     <javac srcdir="input" destdir="output" includeantruntime="false" /> 
+	</target>
+	
+	 <target name="jar" depends="compile">
+        <mkdir dir="output/jar"/>
+        <jar destfile="output/jar/HelloWorld.jar" basedir="output">
+            <manifest>
+                <attribute name="Main-Class" value="oata.HelloWorld"/>
+            </manifest>
+        </jar>
+    </target>
+	
+	<!-- Programm ausführen  -->
+	<target name="run" depends="jar" description="Programm starten"> 
+	     <java jar="output/jar/HelloWorld.jar" fork="true"/>
+	</target>
+	
+		
+	<!-- Generierte Dateien entfernen -->
+	<target name="clean" depends="run" description="Entfernt alle generierten Dateien und Verzeichnisse">
+	    <delete dir="output" />
+		<delete dir="input" />
+	</target>
 	
 </project>
